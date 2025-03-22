@@ -1,29 +1,25 @@
+import { commands } from "./commands.js";
+
 const connectionAddress = (addr) => `${addr.hostname}:${addr.port}`;
 
 const encode = (message) => new TextEncoder().encode(message);
 const decode = (message) => new TextDecoder().decode(message);
 
 const displayConnectionSuccessMsg = (connection) => {
-  const message = `Client connected from ${
-    connectionAddress(
-      connection.remoteAddr,
-    )
-  }`;
+  const message = `Client connected from ${connectionAddress(
+    connection.remoteAddr
+  )}`;
 
   console.log(message);
 };
 
 const displayRequest = (request) => console.log(`REQ:`, request);
 
-const handleRequest = ({ command, args: [a, b] }) => {
-  switch (command) {
-    case "ADD":
-      return { result: a + b };
-    case "SUB":
-      return { result: a - b };
-    default:
-      return { error: "Unknown command" };
-  }
+const handleRequest = ({ command, args }) => {
+  if (!(command in commands)) return { error: "Unknown Command!" };
+
+  const result = commands[command](...args);
+  return { result };
 };
 
 const sendResponse = async (connection, response) => {
