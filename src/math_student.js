@@ -35,6 +35,8 @@ const runAllRawTests = async () => {
   await testRaw("ADD 1 2", 3);
   await testRaw("ADD 1  2", 3);
   await testRaw("ADD 1 4", 5);
+  await testRaw("SUB 4 1", 3);
+  await testRaw("SUB 10 3", 7);
 };
 
 const port = parseInt(Deno.args.at(0));
