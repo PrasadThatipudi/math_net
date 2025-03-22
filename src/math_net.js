@@ -11,14 +11,21 @@ const displayConnectionSuccessMsg = (connection) => {
   console.log(message);
 };
 
-const displayRequest = (request) => console.log(`REQ: ${request}`);
+const displayRequest = (request) => console.log(`REQ:`, request);
+
+const handleRequest = ({ args: [a, b] }) => ({ result: a + b });
+
+const sendResponse = async (connection, response) => {
+  await connection.write(encode(JSON.stringify(response)));
+};
 
 const handleConnection = async (connection) => {
-  for await (const request of connection.readable) {
-    displayRequest(decode(request));
-    const response = JSON.stringify({ result: 3 });
+  for await (const chunk of connection.readable) {
+    const request = JSON.parse(decode(chunk));
+    displayRequest(request);
 
-    await connection.write(encode(response));
+    const response = handleRequest(request);
+    await sendResponse(connection, response);
   }
 };
 

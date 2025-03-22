@@ -41,10 +41,11 @@ const runAllRawTests = async () => {
 
 const runAllTests = async () => {
   await test("ADD", [1, 2], { result: 3 });
+  await test("ADD", [1, 3], { result: 4 });
 };
 
 const port = parseInt(Deno.args.at(0));
 const connection = await Deno.connect({ port });
 
-await runAllTests(connection);
+await runAllTests();
 console.log("All tests passed!!!");
