@@ -1,5 +1,8 @@
 const connectionAddress = (addr) => `${addr.hostname}:${addr.port}`;
 
+const encode = (message) => new TextEncoder().encode(message);
+const decode = (message) => new TextDecoder().decode(message);
+
 const displayConnectionSuccessMsg = (connection) => {
   const message = `Client connected from ${connectionAddress(
     connection.remoteAddr
@@ -8,15 +11,20 @@ const displayConnectionSuccessMsg = (connection) => {
   console.log(message);
 };
 
-const handleConnection = async (connection) => {
-  const reader = connection.readable.getReader();
-  const request = await reader.read();
+const displayRequest = (request) => console.log(`REQ: ${request}`);
 
-  await connection.write(request.value);
+const handleConnection = async (connection) => {
+  for await (const request of connection.readable) {
+    displayRequest(decode(request));
+    const response = JSON.stringify({ result: 3 });
+
+    await connection.write(encode(response));
+  }
 };
 
 const startServer = async (port) => {
   const listener = Deno.listen({ port });
+  console.log(`Listening on ${connectionAddress(listener.addr)}`);
 
   for await (const connection of listener) {
     displayConnectionSuccessMsg(connection);
