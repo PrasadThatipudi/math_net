@@ -27,8 +27,9 @@ const test = async (command, args, expected) => {
 
 const testRaw = async (message, expected) => {
   const [command, ...args] = message.split(/\s+/);
+  const expectedKey = typeof expected === "string" ? "error" : "result";
 
-  await test(command, args.map(Number), { result: expected });
+  await test(command, args.map(Number), { [expectedKey]: expected });
 };
 
 const runAllRawTests = async () => {
@@ -41,6 +42,9 @@ const runAllRawTests = async () => {
   await testRaw("MUL 10 3", 30);
   await testRaw("DIV 4 1", 4);
   await testRaw("DIV 10 5", 2);
+  await testRaw("ADD 10", "Incorrect Argument");
+  await testRaw("ADD 10 5 2", "Incorrect Argument");
+  await testRaw("AD 10 5", "Unknown Command!");
 };
 
 const port = parseInt(Deno.args.at(0));

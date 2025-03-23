@@ -18,8 +18,17 @@ const displayRequest = (request) => console.log(`REQ:`, request);
 const handleRequest = ({ command, args }) => {
   if (!commands.has(command)) return { error: "Unknown Command!" };
 
-  const result = commands.get(command)(...args);
-  return { result };
+  try {
+    const result = commands.get(command)(...args);
+    return { result };
+  } catch (error) {
+    return { error: error.message };
+  }
+};
+
+const debug = function (arg) {
+  console.log(arg);
+  return arg;
 };
 
 const sendResponse = async (connection, response) => {
