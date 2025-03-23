@@ -24,27 +24,30 @@ const handleRequest = ({ command, args }) => {
   }
 };
 
-const loggerStream = new TransformStream({
-  transform(chunk, controller) {
-    console.log(decode(chunk));
+const loggerStream = () =>
+  new TransformStream({
+    transform(chunk, controller) {
+      console.log(decode(chunk));
 
-    controller.enqueue(chunk);
-  },
-});
+      controller.enqueue(chunk);
+    },
+  });
 
-const handleRequestStream = new TransformStream({
-  transform(chunk, controller) {
-    const request = JSON.parse(decode(chunk));
-    const response = JSON.stringify(handleRequest(request));
+const handleRequestStream = () =>
+  new TransformStream({
+    transform(chunk, controller) {
+      const request = JSON.parse(decode(chunk));
+      const response = JSON.stringify(handleRequest(request));
 
-    controller.enqueue(encode(response));
-  },
-});
+      controller.enqueue(encode(response));
+    },
+  });
 
 const handleConnection = (connection) => {
   connection.readable
-    .pipeThrough(loggerStream)
+    .pipeThrough(loggerStream())
     .pipeThrough(handleRequestStream)
+    .pipeThrough(loggerStream())
     .pipeTo(connection.writable);
 };
 
