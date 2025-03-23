@@ -1,8 +1,13 @@
-const commands = {
-  ADD: (a, b) => a + b,
-  SUB: (a, b) => a - b,
-  MUL: (a, b) => a * b,
-  DIV: (a, b) => a / b,
-};
+const add = (a, b) => a + b;
+const sub = (a, b) => a - b;
+const mul = (a, b) => a * b;
+const div = (a, b) => a / b;
+
+const commands = new Map();
+
+commands.set("ADD", add);
+commands.set("SUB", sub);
+commands.set("MUL", mul);
+commands.set("DIV", div);
 
 export { commands };

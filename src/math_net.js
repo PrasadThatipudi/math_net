@@ -16,9 +16,9 @@ const displayConnectionSuccessMsg = (connection) => {
 const displayRequest = (request) => console.log(`REQ:`, request);
 
 const handleRequest = ({ command, args }) => {
-  if (!(command in commands)) return { error: "Unknown Command!" };
+  if (!commands.has(command)) return { error: "Unknown Command!" };
 
-  const result = commands[command](...args);
+  const result = commands.get(command)(...args);
   return { result };
 };
 
