@@ -13,8 +13,6 @@ const displayConnectionSuccessMsg = (connection) => {
   console.log(message);
 };
 
-const displayRequest = (request) => console.log(`REQ:`, request);
-
 const handleRequest = ({ command, args }) => {
   if (!commands.has(command)) return { error: "Unknown Command!" };
 
@@ -26,23 +24,30 @@ const handleRequest = ({ command, args }) => {
   }
 };
 
-const debug = function (arg) {
-  console.log(arg);
-  return arg;
-};
+const loggerStream = () =>
+  new TransformStream({
+    transform(chunk, controller) {
+      console.log(decode(chunk));
 
-const sendResponse = async (connection, response) => {
-  await connection.write(encode(JSON.stringify(response)));
-};
+      controller.enqueue(chunk);
+    },
+  });
 
-const handleConnection = async (connection) => {
-  for await (const chunk of connection.readable) {
-    const request = JSON.parse(decode(chunk));
-    displayRequest(request);
+const handleRequestStream = () =>
+  new TransformStream({
+    transform(chunk, controller) {
+      const request = JSON.parse(decode(chunk));
+      const response = JSON.stringify(handleRequest(request));
 
-    const response = handleRequest(request);
-    await sendResponse(connection, response);
-  }
+      controller.enqueue(encode(response));
+    },
+  });
+
+const handleConnection = (connection) => {
+  connection.readable
+    .pipeThrough(loggerStream())
+    .pipeThrough(handleRequestStream())
+    .pipeTo(connection.writable);
 };
 
 const startServer = async (port) => {
@@ -51,7 +56,8 @@ const startServer = async (port) => {
 
   for await (const connection of listener) {
     displayConnectionSuccessMsg(connection);
-    await handleConnection(connection);
+
+    handleConnection(connection);
   }
 };
 

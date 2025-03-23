@@ -5,7 +5,7 @@ const decode = (message) => new TextDecoder().decode(message);
 
 const createRequest = (command, args) => {
   const request = { command, args };
-  return JSON.stringify(request);
+  return JSON.stringify(request).concat("\n");
 };
 
 const sendRequest = async (request) => await connection.write(encode(request));
