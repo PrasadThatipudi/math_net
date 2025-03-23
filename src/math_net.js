@@ -46,7 +46,7 @@ const handleRequestStream = () =>
 const handleConnection = (connection) => {
   connection.readable
     .pipeThrough(loggerStream())
-    .pipeThrough(handleRequestStream)
+    .pipeThrough(handleRequestStream())
     .pipeThrough(loggerStream())
     .pipeTo(connection.writable);
 };
