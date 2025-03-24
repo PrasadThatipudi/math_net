@@ -47,7 +47,7 @@ const runAllRawTests = async () => {
   await testRaw("AD 10 5", "Unknown Command!");
 };
 
-const port = parseInt(Deno.args.at(0));
+const port = Deno.args.at(0);
 const connection = await Deno.connect({ port });
 
 await runAllRawTests();
